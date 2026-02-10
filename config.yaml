@@ -1,4 +1,36 @@
+alerting:
+  github:
+    token: ${GITHUB_TOKEN}
+    repository: "USERNAME/REPO"
+    issue:
+      title: "[GATUS] {{ .Endpoint.Name }} down"
+      description: |
+        Endpoint: {{ .Endpoint.Name }}
+        URL: {{ .Endpoint.URL }}
+        Status: {{ .Result.StatusCode }}
+        RT: {{ .Result.ResponseTime }}ms
+      labels: ["gatus", "incident"]
+      threshold: 3
+      send-on-resolved: true
+
 endpoints:
+  - name: leantime
+    url: "http://<ALB_DNS>/"
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts:
+      - type: github
+
+  - name: gatus
+    url: "http://<ALB_DNS>:8080/"
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 5000"
+    alerts:
+      - type: githubendpoints:
   - name: front-end
     group: core
     url: "https://twin.sh/health"
@@ -51,3 +83,37 @@ endpoints:
     interval: 1h
     conditions:
       - "[DOMAIN_EXPIRATION] > 720h"
+
+alerting:
+  github:
+    token: ${GITHUB_TOKEN}
+    repository: "USERNAME/REPO"
+    issue:
+      title: "[GATUS] {{ .Endpoint.Name }} down"
+      description: |
+        Endpoint: {{ .Endpoint.Name }}
+        URL: {{ .Endpoint.URL }}
+        Status: {{ .Result.StatusCode }}
+        RT: {{ .Result.ResponseTime }}ms
+      labels: ["gatus", "incident"]
+      threshold: 3
+      send-on-resolved: true
+
+endpoints:
+  - name: leantime
+    url: "http://<ALB_DNS>/"
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts:
+      - type: github
+
+  - name: gatus
+    url: "http://<ALB_DNS>:8080/"
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 5000"
+    alerts:
+      - type: github
